@@ -32,13 +32,17 @@ class TimeWindowDataset(Dataset):
         else:
             # Siempre usar embedding promedio (evita problema de longitud variable)
             embeddings = torch.FloatTensor(window['embedding'])
-            label = torch.tensor(window['has_anomaly'], dtype=torch.float32)
+            label = torch.tensor([window['has_anomaly']], dtype=torch.float32)
 
         # Devolver solo info serializable como tercer elemento
         meta = {
             'has_anomaly':     window['has_anomaly'],
             'mitre_techniques': window.get('mitre_techniques', []),
             'n_events':        window.get('n_events', 0),
+            'avg_embedding':     window.get('embedding', []).tolist() if 'embedding' in window else None,
+            'start_time':       window.get('start_time').isoformat() if 'start_time' in window else None,
+            'end_time':         window.get('end_time').isoformat() if 'end_time' in window else None,
+            'n_events':        window.get('n_events', 0)
         }
 
         return embeddings, label, meta
