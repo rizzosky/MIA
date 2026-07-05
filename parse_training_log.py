@@ -246,6 +246,16 @@ def plot_test_comparison(results: dict, output_dir: Path):
     labels  = [LABELS.get(m, m) for m in models]
     n_models = len(models)
 
+    # Recopilar todos los valores reales para calcular el rango del eje Y
+    all_vals = [results[m]["test"].get(metric, 0)
+                for m in models for metric in metrics]
+    v_min, v_max = min(all_vals), max(all_vals)
+    # Margen: 5% del rango observado, con un piso de 0.02 para no
+    # comprimir demasiado cuando todos los valores son muy similares
+    margin = max((v_max - v_min) * 0.08, 0.02)
+    y_low  = max(0.0, v_min - margin)
+    y_high = min(1.05, v_max + margin * 2)  # más margen arriba para las etiquetas
+
     x     = range(len(metrics))
     width = 0.8 / n_models  # el grupo completo ocupa 80% del espacio entre ticks
     fig, ax = plt.subplots(figsize=(13, 5.5))
@@ -259,13 +269,13 @@ def plot_test_comparison(results: dict, output_dir: Path):
                       edgecolor="white", linewidth=0.6)
         for bar, val in zip(bars, vals):
             ax.text(bar.get_x() + bar.get_width() / 2,
-                    bar.get_height() + 0.0015,
+                    bar.get_height() + (y_high - y_low) * 0.01,
                     f"{val:.3f}", ha="center", va="bottom",
                     fontsize=7.5, rotation=90 if n_models > 4 else 0)
 
     ax.set_xticks(list(x))
     ax.set_xticklabels(["Accuracy", "Precision", "Recall", "F1-score"])
-    ax.set_ylim(0.90, 1.04)
+    ax.set_ylim(y_low, y_high)
     ax.set_ylabel("Valor")
     ax.set_title("Comparación de métricas en test set")
     ax.legend(loc="lower center", ncol=3, fontsize=9,

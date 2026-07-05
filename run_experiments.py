@@ -120,6 +120,7 @@ def main():
 
     train_loader, val_loader, test_loader = make_loaders(
         data, args.batch_size, args.max_seq_len, use_sequence=True)
+    print(f"  max_seq_len usado: {args.max_seq_len}")
     pos_weight = compute_pos_weight(data["train"], args.device)
 
     model_names = [m.strip() for m in args.models.split(",")]
@@ -142,6 +143,7 @@ def main():
             "f1":         round(float(test_metrics["f1"]),        4),
             "best_epoch": best_epoch,
             "n_params":   n_params,
+            "max_seq_len": args.max_seq_len,
             "total_training_time_s": round(model.total_training_time, 2),
             "avg_epoch_time_s":       round(model.avg_epoch_time, 3),
             "n_epochs_run":           len(model.epoch_times),
