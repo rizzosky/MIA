@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p results
+export PYTORCH_ENABLE_MPS_FALLBACK=1
 # Correr LogFormer guardando el log
 python run_logformer.py \
     --dataset    ./data/windows.pkl \

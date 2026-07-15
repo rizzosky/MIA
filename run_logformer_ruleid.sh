@@ -1,4 +1,6 @@
 #!/bin/bash
+
+mkdir -p results_ruleid
 export PYTORCH_ENABLE_MPS_FALLBACK=1
 
 python run_logformer_ruleid.py \

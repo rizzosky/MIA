@@ -144,7 +144,70 @@ Análogo a `run_logformer.py` para `LogFormerAdapterLogKey`.
 
 ---
 
-## 5. Análisis y visualización de resultados
+## 5. Baselines clásicos (sin redes neuronales)
+
+### `run_baselines.py`
+Entrena y evalúa PCA, Isolation Forest y One-Class SVM en modo
+semi-supervisado clásico (solo ventanas normales de train) usando el
+embedding promedio de BERT como representación.
+
+### `run_baselines_ruleid.py`
+Variante con el vector de conteo de log keys ("message count vector")
+de Xu et al., con la opción `--tfidf` para la ponderación TF-IDF
+propuesta por los mismos autores.
+
+### `run_baselines.sh`
+Ejecuta las tres variantes en orden: BERT embedding, count vector
+crudo y count vector + TF-IDF (Tabla de baselines clásicos de la
+tesis).
+
+```bash
+./run_baselines.sh
+```
+
+---
+
+## 6. Búsqueda de hiperparámetros
+
+### `grid_search.py`
+Búsqueda por grilla con selección por F1 de **validación** (semilla
+fija por corrida) y evaluación de test una única vez por modelo, solo
+para la configuración ganadora. Genera `grid_<modelo>.csv` (todas las
+corridas), `grid_summary.json` (ganadoras + test) y `grid_tables.tex`
+(tablas LaTeX listas para el documento). Tres modos:
+
+```bash
+# Grilla principal: LR x batch x hidden dim, modelos transformer,
+# deeplog y bert (78 configs, ~75 min en M5 Pro/MPS)
+./grid_search.sh
+
+# Grilla arquitectónica: num_heads y num_layers con el resto fijo
+# en la configuración común; solo transformer y deeplog (~8 min).
+# bert no participa: su arquitectura (12 capas, 12 cabezas) está
+# fijada por el preentrenamiento.
+./grid_arch.sh
+
+# Reevaluación: reentrena solo las configs ganadoras de un
+# grid_summary.json existente y rehace el test final, sin repetir
+# la grilla
+python grid_search.py --dataset data/windows.pkl --device mps \
+    --output_dir results/grid --from_summary results/grid/grid_summary.json
+```
+
+Nota: la columna `best_epoch` de los CSV no es confiable (queda en 0
+en la mayoría de las corridas); usar `n_epochs_run`.
+
+### `regenerar_tablas.py`
+Regenera `grid_tables.tex` a partir de los CSV y el JSON existentes,
+sin reentrenar.
+
+```bash
+python regenerar_tablas.py --grid_dir results/grid
+```
+
+---
+
+## 7. Análisis y visualización de resultados
 
 ### `eda_soc_logs.py`
 Análisis exploratorio de datos sobre los logs normales e incidente:
@@ -157,6 +220,29 @@ python eda_soc_logs.py \
     --normal <carpeta_normal> --incidente <carpeta_incidente> \
     --salida ./eda_output
 ```
+
+Incluye el cálculo explícito de percentiles (P90/P95/P99) de eventos
+por ventana, por clase y combinado — los valores citados en la
+justificación de `max_seq_len` de la tesis. `eda_pfsense.sh` lo
+ejecuta con las rutas del experimento de pfSense.
+
+### `estimar_submuestreo.py`
+Modelo de capacidad de memoria: estima el máximo de eventos
+procesables según la RAM disponible (bytes/evento medidos desde un
+`.pkl` real o calculados teóricamente) y el submuestreo mínimo
+resultante. Respalda la sección "Estimación del submuestreo mínimo
+aplicable" de la tesis.
+
+```bash
+python estimar_submuestreo.py \
+    --pkl data/windows_pfsense.pkl --eventos-pkl 100000 \
+    --eventos-total 6125736 --ram-gb 24
+```
+
+### `estimate_capacity.py`
+Herramienta de planificación de capacidad más general: combina
+mediciones de disco, RAM y throughput para estimar volúmenes y
+tiempos, con puntos de calibración de `memory_profile.py`.
 
 ### `explorar_sistemas.py`
 Script de exploración sobre los archivos JSON crudos (comprimidos o
@@ -215,13 +301,10 @@ correspondientes (no se usan subcarpetas).
 ./run_experiments.sh          # transformer, bert, deeplog -> results/training_v2.log
 ./run_logformer.sh            # LogFormer 2 etapas -> results/training_logformer_v2.log
 ./combine_and_compare.sh      # combina logs y genera figuras en results/curves
+./run_baselines.sh            # baselines clásicos (PCA, iForest, OC-SVM)
+./grid_search.sh              # búsqueda de hiperparámetros (LR, batch, hidden)
+./grid_arch.sh                # (opcional) búsqueda arquitectónica (heads, layers)
 ```
-
-*(Nota: `prepare_dataset.sh` no se incluyó explícitamente en el
-listado de archivos compartidos junto con el resto de los `.sh`;
-verificar que exista con el comando de `prepare_dataset.py` apuntando
-al sistema Windows, o crearlo siguiendo el mismo patrón que
-`prepare_dataset_pfsense.sh`.)
 
 ### Sistema Windows — representación categórica (rule_id)
 
@@ -275,6 +358,10 @@ python check_seqlen.py <path_al_pkl>   # distribución de eventos por ventana,
 | `combine_and_compare.sh` | Combina logs de Windows (rep. rica) y grafica |
 | `parse_ruleid.sh` | Combina logs categóricos y grafica (incl. comparación) |
 | `parse_training_log_pfsense.sh` | Combina logs de pfSense y grafica |
+| `run_baselines.sh` | Baselines clásicos: BERT emb., count vector, TF-IDF |
+| `grid_search.sh` | Grilla principal de hiperparámetros (3 modelos) |
+| `grid_arch.sh` | Grilla arquitectónica (heads/layers, sin bert) |
+| `eda_pfsense.sh` | EDA sobre los logs de pfSense |
 
 **Nota:** los nombres de archivo de log y de dataset (`_v2`, `_500k`,
 `_fixed`, etc.) reflejan el historial de iteraciones del proyecto
