@@ -237,8 +237,9 @@ python eda_soc_logs.py \
 
 Incluye el cálculo explícito de percentiles (P90/P95/P99) de eventos
 por ventana, por clase y combinado — los valores citados en la
-justificación de `max_seq_len` de la tesis. `eda_pfsense.sh` lo
-ejecuta con las rutas del experimento de pfSense.
+justificación de `max_seq_len` de la tesis. `eda_task_scheduler.sh`
+y `eda_pfsense.sh` lo ejecutan con las rutas de cada experimento
+(sistema Windows y pfSense respectivamente).
 
 ### `estimar_submuestreo.py`
 Modelo de capacidad de memoria: estima el máximo de eventos
@@ -377,6 +378,7 @@ python check_seqlen.py <path_al_pkl>   # distribución de eventos por ventana,
 | `run_baselines.sh` | Baselines clásicos: BERT emb., count vector, TF-IDF |
 | `grid_search.sh` | Grilla principal de hiperparámetros (3 modelos) |
 | `grid_arch.sh` | Grilla arquitectónica (heads/layers, sin bert) |
+| `eda_task_scheduler.sh` | EDA sobre los logs de Windows (task scheduler) |
 | `eda_pfsense.sh` | EDA sobre los logs de pfSense |
 
 **Nota:** los nombres de archivo de log y de dataset (`_v2`, `_500k`,
