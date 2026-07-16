@@ -40,6 +40,20 @@ python prepare_dataset_ruleid.py \
     --output        ./data/windows_ruleid.pkl
 ```
 
+### `extract_task_scheduler.sh`
+Script de extracción `jq` + `parallel` para el experimento
+principal: filtra el agente `256` (Windows Task Scheduler,
+`location = EventChannel`) desde los archivos crudos de Wazuh,
+para ambos períodos, extrayendo los campos documentados en la
+Metodología (incluidos `process_id` y `thread_id`, requeridos por
+la construcción del texto de entrada). Ajustar las rutas al inicio
+del script antes de ejecutar.
+
+```bash
+chmod +x extract_task_scheduler.sh
+./extract_task_scheduler.sh
+```
+
 ### `extract_pfsense.sh`
 Script de extracción `jq` + `parallel` para el experimento de
 generalización a pfSense: filtra el agente `016` combinando sus dos
@@ -297,6 +311,7 @@ correspondientes (no se usan subcarpetas).
 ### Sistema Windows (task scheduler) — representación rica
 
 ```bash
+./extract_task_scheduler.sh   # extracción jq+parallel desde raw
 ./prepare_dataset.sh          # genera ./data/windows.pkl
 ./run_experiments.sh          # transformer, bert, deeplog -> results/training_v2.log
 ./run_logformer.sh            # LogFormer 2 etapas -> results/training_logformer_v2.log
@@ -349,6 +364,7 @@ python check_seqlen.py <path_al_pkl>   # distribución de eventos por ventana,
 | `prepare_dataset.sh` | Preprocesa el sistema Windows (representación rica) |
 | `prepare_dataset_ruleid.sh` | Preprocesa el sistema Windows (representación categórica) |
 | `prepare_dataset_pfsense.sh` | Preprocesa pfSense con submuestreo configurable |
+| `extract_task_scheduler.sh` | Extracción `jq`+`parallel` de agente 256 (Windows) desde raw |
 | `extract_pfsense.sh` | Extracción `jq`+`parallel` de agente 016 desde raw |
 | `run_experiments.sh` | Entrena transformer/bert/deeplog (Windows, rep. rica) |
 | `run_experiments_ruleid.sh` | Entrena transformer/deeplog categóricos |

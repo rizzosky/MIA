@@ -1,0 +1,21 @@
+rule_id,descripcion,apariciones
+67027,A process was created.,6782
+105057,Tarea programada EJECUTADA,2164
+100200,Special privileges assigned to new logon.,246
+60137,Windows User Logoff,141
+100207,Windows logon success system account.,134
+60107,Failed attempt to perform a privileged operation,65
+60602,Windows application error event.,48
+67023,Non service account logged off.,22
+61104,Service startup type was changed,16
+60011,Windows error event.,13
+60227,A new external device was recognized by the system,12
+60642,Software protection service scheduled successfully.,10
+60608,Summary event of the report's signatures.,10
+92653,User: ASESP\operador logged using Remote Desktop Connection (RDP) from ip:172.16.3.126.,10
+67016,Task Scheduler: .,9
+67022,Non network or service local logon.,8
+60118,Windows Workstation Logon Success,8
+61102,Windows System error event,6
+60108,Session reconnected/disconnected to winstation,5
+60790,The registry file is still in use by other applications or services.,4

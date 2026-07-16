@@ -1,0 +1,9 @@
+,Normal,Anómalo
+Total de eventos,"4,507,057","1,618,679"
+Agentes distintos,N/A,N/A
+Log keys distintas,15,18
+Primer evento,2025-11-23 00:00:00.883000-03:00,2025-03-30 00:00:01.014000-03:00
+Último evento,2025-11-30 23:59:58.715000-03:00,2025-04-02 00:00:00.023000-03:00
+Duración total,7 days 23:59:57.832000,2 days 23:59:59.009000
+Inter-arrival medio (s),0.1534,0.1601
+Inter-arrival mediana (s),0.0000,0.0000

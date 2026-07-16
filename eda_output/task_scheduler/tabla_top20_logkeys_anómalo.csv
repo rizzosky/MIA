@@ -1,0 +1,13 @@
+rule_id,descripcion,apariciones
+105057,Tarea programada EJECUTADA,807
+60608,Summary event of the report's signatures.,11
+61102,Windows System error event,7
+67014,Task Scheduler: .,4
+60011,Windows error event.,4
+60642,Software protection service scheduled successfully.,3
+67016,Task Scheduler: .,3
+60602,Windows application error event.,2
+60790,The registry file is still in use by other applications or services.,2
+60122,Logon Failure - Unknown user or bad password,1
+100210,Account Disabled,1
+100202,User must change password on the next logon,1
